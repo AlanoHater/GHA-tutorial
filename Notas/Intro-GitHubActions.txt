@@ -1,0 +1,35 @@
+es una plataforma que automatiza pipelines de CI/cd
+
+Q SE PUEDE HACER?
+
+CHECKOUT -> ENVIROMENT SETUP -> LINT TEST -> BUILD -> DEPLOY
+
+
+
+GHA COMPONENTS:
+
+Evento: es una actividad especifica en un repositorio que dispara un
+workflow run: 
+ - push
+ - pull request
+ - opening a issue
+
+Workflow: un proceso automatizado que correrá uno o multiples trabajos
+ - definidos en un archivo YAML
+ - Disparados por eventos 
+ - Housed in .github/workflows directory in repository 
+ - Puedes definir multiples workflows
+
+Steps : unidades individuales de trabajo
+ - ejcutados en orden, dependen del paso previo
+ - corre en la misma maquina , los datos pueden ser compartidos
+
+ Job : es un conjuntos de Steps
+ - cada trabajo es independiente
+ - es posible ejecutarlos en paralelo
+ - son ejecutados en una maquina llamada " runners "
+
+EJEMPLO:
+Push(commit) -> Job(runs on ubuntu runner (CHECKOUT repo, run py code) has 2 steps)
+
+

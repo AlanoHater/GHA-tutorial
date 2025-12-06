@@ -1,0 +1,21 @@
+CI/CD
+
+Que es CI?
+
+es la practica donde frecuentemente construimos, testeamos y combinamos cambios
+en el codigo en un repositorio compartido
+
+permite a los desarrolladores detectar errores de integracion y mantener una codebase consistente
+
+Qes es CD?
+
+Continuous deployment involves automatically releasing every code change to production, 
+while continuous delivery focuses on preparing code changes for release but allowing for manual approval before deployment
+
+
+CI/CD in MACHINE LEARNING
+
+Data versioning and management
+tunin hyperparameters
+improving collaboration
+manage complexities in model serving, monitoring, and updating

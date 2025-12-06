@@ -1,0 +1,29 @@
+es un lenguaje para organizar datos en un formato legible 
+
+se usa en archivos de configuracion, intercambio de datos y presentacion
+estructurada de datos 
+
+comparable a JSON en terminos de funcionalidad, osea que permite
+un estandar de formato para tranferir datos entre lenguajes o apps
+
+su fortaleza es que esta diseñado para que sea facil para los humanos
+
+.yaml o .yml
+
+
+es usado en archivos de configuracion para herramientas de ci/cd 
+GitHub actions por ejemplo o DataVersioningControl (DVC)
+
+
+La sintaxis de yml es parecida a la de python por tanto una identacion
+incorrecta producirá errores, en yml no se permita el tab para sangria
+entonces se debe hacer con espacios
+
+mappings, sequences and scalars are the building blocks for YAML
+
+flow format [12,12343,34]
+
+block format:
+ - 12
+ - 34
+ 
