@@ -51,3 +51,20 @@ export interface SearchResult {
   text: string;
   sources: GroundingSource[];
 }
+
+export interface UserProgress {
+  completedTopics: Set<string>;
+  totalXP: number;
+  certificates: Certificate[];
+  startDate: Date;
+  lastActive: Date;
+}
+
+export interface Certificate {
+  id: string;
+  title: string;
+  description: string;
+  earnedDate: Date;
+  xpRequired: number;
+  badge: string;
+}

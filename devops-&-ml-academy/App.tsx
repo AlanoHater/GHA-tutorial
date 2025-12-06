@@ -17,6 +17,8 @@ import {
 import LessonView from './components/LessonView';
 import ChatInterface from './components/ChatInterface';
 import SearchAssistant from './components/SearchAssistant';
+import CertificateView from './components/CertificateView';
+import { Certificate } from './types';
 
 const App: React.FC = () => {
   const [activeTopic, setActiveTopic] = useState<Topic>(CURRICULUM[0].topics[0]);
@@ -25,8 +27,9 @@ const App: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [expandedChapters, setExpandedChapters] = useState<Set<string>>(new Set(['ch2']));
   const [isChatOpen, setIsChatOpen] = useState(false);
-  const [viewMode, setViewMode] = useState<'learn' | 'research'>('learn');
+  const [viewMode, setViewMode] = useState<'learn' | 'research' | 'certificates'>('learn');
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [certificates, setCertificates] = useState<Certificate[]>([]);
 
   const toggleChapter = (chapterId: string) => {
     const newExpanded = new Set(expandedChapters);
@@ -48,7 +51,27 @@ const App: React.FC = () => {
   };
 
   const handleTopicComplete = (topicId: string) => {
-    setCompletedTopics(prev => new Set(prev).add(topicId));
+    const newCompletedTopics = new Set(completedTopics).add(topicId);
+    setCompletedTopics(newCompletedTopics);
+
+    // Check if chapter is completed and award certificate
+    CURRICULUM.forEach(chapter => {
+      const chapterTopics = chapter.topics;
+      const isChapterCompleted = chapterTopics.every(topic => newCompletedTopics.has(topic.id));
+      const alreadyHasCertificate = certificates.some(cert => cert.id === `chapter-${chapter.id}`);
+
+      if (isChapterCompleted && !alreadyHasCertificate) {
+        const newCertificate: Certificate = {
+          id: `chapter-${chapter.id}`,
+          title: `Certificado: ${chapter.title}`,
+          description: `Completado el capítulo ${chapter.number} - ${chapter.title}`,
+          earnedDate: new Date(),
+          xpRequired: chapter.topics.reduce((total, topic) => total + topic.xp, 0),
+          badge: chapter.number === 2 ? '🚀' : chapter.number === 3 ? '🤖' : '🎯'
+        };
+        setCertificates(prev => [...prev, newCertificate]);
+      }
+    });
   };
 
   const totalXp = Array.from(completedTopics).reduce((acc: number, topicId) => {
@@ -126,18 +149,36 @@ const App: React.FC = () => {
           <div className="mb-2">
             <h3 className={`text-xs font-semibold uppercase tracking-wider px-2 mb-2 transition-colors duration-300 ${
               isDarkMode ? 'text-slate-400' : 'text-gray-400'
-            }`}>Material del Curso</h3>
-            <button
-               onClick={() => setViewMode('research')}
-               className={`w-full text-left px-3 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-all duration-200 hover:scale-105 ${
-                 viewMode === 'research'
-                 ? (isDarkMode ? 'bg-blue-900/50 text-blue-300' : 'bg-blue-50 text-blue-700')
-                 : (isDarkMode ? 'text-slate-300 hover:bg-slate-700' : 'text-gray-600 hover:bg-gray-100')
-               }`}
-            >
-               <span className="w-2 h-2 rounded-full bg-blue-400 animate-pulse"></span>
-               Centro de Investigación
-            </button>
+            }`}>Navegación</h3>
+            <div className="space-y-1">
+              <button
+                 onClick={() => setViewMode('research')}
+                 className={`w-full text-left px-3 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-all duration-200 hover:scale-105 ${
+                   viewMode === 'research'
+                   ? (isDarkMode ? 'bg-blue-900/50 text-blue-300' : 'bg-blue-50 text-blue-700')
+                   : (isDarkMode ? 'text-slate-300 hover:bg-slate-700' : 'text-gray-600 hover:bg-gray-100')
+                 }`}
+              >
+                 <span className="w-2 h-2 rounded-full bg-blue-400 animate-pulse"></span>
+                 Centro de Investigación
+              </button>
+              <button
+                 onClick={() => setViewMode('certificates')}
+                 className={`w-full text-left px-3 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-all duration-200 hover:scale-105 ${
+                   viewMode === 'certificates'
+                   ? (isDarkMode ? 'bg-yellow-900/50 text-yellow-300' : 'bg-yellow-50 text-yellow-700')
+                   : (isDarkMode ? 'text-slate-300 hover:bg-slate-700' : 'text-gray-600 hover:bg-gray-100')
+                 }`}
+              >
+                 <span className="w-2 h-2 rounded-full bg-yellow-400"></span>
+                 Mis Certificados
+                 {certificates.length > 0 && (
+                   <span className="ml-auto bg-yellow-500 text-white text-xs px-2 py-1 rounded-full">
+                     {certificates.length}
+                   </span>
+                 )}
+              </button>
+            </div>
           </div>
 
           {CURRICULUM.map((chapter) => {
@@ -239,7 +280,8 @@ const App: React.FC = () => {
             <span className={`font-semibold truncate transition-colors duration-200 ${
               isDarkMode ? 'text-slate-200' : 'text-gray-800'
             }`}>
-               {viewMode === 'learn' ? activeChapter.title : 'Centro de Investigación'}
+               {viewMode === 'learn' ? activeChapter.title :
+                viewMode === 'research' ? 'Centro de Investigación' : 'Mis Certificados'}
             </span>
           </div>
         </div>
@@ -248,8 +290,10 @@ const App: React.FC = () => {
         <div className="flex-1 overflow-y-auto p-4 md:p-8 lg:p-12 scroll-smooth">
           {viewMode === 'research' ? (
              <SearchAssistant />
+          ) : viewMode === 'certificates' ? (
+             <CertificateView certificates={certificates} />
           ) : (
-             <LessonView 
+             <LessonView
                chapter={activeChapter}
                topic={activeTopic}
                onComplete={handleTopicComplete}
